@@ -1,0 +1,752 @@
+# CODE STANDARDS
+
+## Core Principles
+
+- Write clean, readable, maintainable code
+- Follow DRY (Don't Repeat Yourself)
+- Keep It Simple (KISS) - simplest solution over complexity
+- Keep functions small (max 50 lines)
+- Use meaningful names
+- Self-documenting code
+- Consistent formatting - follow project style guide
+- Refactor regularly to improve code structure
+- Don't generate .md files or t.txt files or example_usage files or similar things unless I ask for it.
+- Comments are added in the cases where you need to explain the code to the person after you and things are not clear enough.
+- Always look for existing components if possible to use instead of building new ones.
+
+## `.protected-files` (MANDATORY — NEVER BREAK THIS)
+
+- **NEVER edit, unlock, comment out, or rewrite** the file `.protected-files` itself. Do not remove entries, comment paths out, or “temporarily unlock” listed files by changing that config.
+- You **may** edit files that are *listed inside* `.protected-files` (e.g. `src/core/routing/types.ts`, `build-routes.tsx`) when the feature truly requires it.
+- If the work includes changes to any listed protected file: implement them normally, but **before `git push` stop and tell the user clearly** that protected files were modified and the push/commit may be blocked by `validate:protected` — do **not** work around that by editing `.protected-files`. Wait for the user on how to proceed (separate protected PR / team approval / etc.).
+- Never use “comment out the path in `.protected-files`” as a commit strategy.
+
+## Use What Already Exists First (MANDATORY)
+
+Before creating ANY new hook, component, util, helper, service, or type:
+
+1. **Search the codebase exhaustively:**
+   - Use Grep/Glob to find similar implementations
+   - Check `src/shared/`, `lmsui/`, and sibling features in the same tenant
+   - Look for: hooks (`use-*`), utils (`*-mapper`, `parse-*`, `format-*`), components, services
+   - Examples: infinite scroll hooks, API query patterns, form validation, card components, modals
+
+2. **ASK before deciding:**
+   - If you find something that's 80%+ similar, **STOP and ASK**: "I found [existing-thing] that does X. Should I use it or create a new one for Y?"
+   - If you're about to create something that feels common (pagination → infinite scroll, data fetching, form handling), **ASK**: "Does this pattern already exist in the codebase?"
+   - If you can't find an existing solution but suspect one might exist, **ASK**: "Should I implement [feature] or is there already a pattern/component for this?"
+
+3. **Reuse > Extend > Create (in that order):**
+   - **Reuse:** Use the existing hook/component/util as-is (90% of cases)
+   - **Extend:** Add an optional parameter or prop to the existing one (8% of cases)
+   - **Create:** Only when existing code fundamentally doesn't fit AND user confirmed (2% of cases)
+
+4. **Examples of what to check BEFORE creating:**
+   - Infinite scroll? → Check for existing `useInfinite*` hooks or `VirtualizedList` usage
+   - API fetching? → Use `useFetchData` and `useApiMutation`, never raw `useQuery`
+   - Form validation? → Use `react-hook-form + zodResolver`, never custom validation
+   - Modal/Dialog? → Check `lmsui/components` and sibling features first
+   - Card grid with actions? → Check `StackedInfoCard`, `FinanceTwoCard`, sibling card components
+   - Data table? → Use `AdvancedDataTable` or `DataTable` from lmsui, don't build new
+
+5. **Hard stop before new files:**
+   - Creating a new hook file? Grep for similar entity hooks first
+   - Creating a new component? Check `lmsui/` and sibling features
+   - Creating a new util? Check `src/shared/utils/` and feature-level utils
+   - Creating a new service pattern? Check existing service layer patterns
+
+**CRITICAL:** When in doubt, ASK. Creating duplicates is worse than asking first.
+
+## Anti-Overengineering (MANDATORY)
+
+Stop creating new files for tiny pieces of code. Before adding ANY new file ask:
+
+1. **Does an existing file already cover this concern?** If yes, add to it. Examples in this repo:
+
+- `src/shared/utils/shallow-url.ts` already hosts URL / `window.location` helpers — new path predicates and URL helpers go here, not in a new file.
+- `src/shared/utils/semester-*.ts`, `src/shared/utils/roles.ts`, etc. follow the same pattern: one domain concept per file, multiple related functions inside.
+
+2. **Is the new file under ~10 lines with one tiny function?** That is almost always a sign you should inline it at the call site OR merge it into an existing util/constants file.
+3. **Will the file have a single, never-reused export?** If it's only consumed by 1–2 files and is small, just keep it next to the consumer or merge into an existing shared util.
+
+Hard rules:
+
+- Do NOT create a new `*.ts` in `src/shared/utils/` for a single small predicate, regex, or formatter. Find the closest existing util file and extend it.
+- Do NOT add a new `constants/*.ts` (or any layer file) that exports **only one** static value (e.g. a lone `API_BASE` or path string). Put it in an **existing** constants file for that module (multiple related roots/paths), or **colocate** it at the top of the **single service** that uses it.
+- Do NOT introduce a new module folder (`hooks/`, `utils/`, `constants/`, `services/`, `types/`) just to hold ONE tiny export.
+- Do NOT split a single helper into a new dedicated file just because it is "shared" — sharing means importable, not "owns its own file".
+- When unsure between (a) a new file, (b) extending an existing file, or (c) inlining — pick the cheapest option that does not duplicate code. New files are the LAST resort.
+- Don't use native form fields as much as possible, instead use the ones defined in the codebase like in lmsui or other places.
+- Use useFetchData() and useApiMutation() instead of the native useQuery() / useMutation() / useQueryClient().
+- NEVER import useQueryClient from @tanstack/react-query in mutation hooks. useApiMutation() accepts an `invalidateQueries` parameter that handles cache invalidation internally — use that instead.
+
+## Reuse vs. Duplication (MANDATORY)
+
+Before writing ANY new util, helper, hook, constant, mapper, or formatter:
+
+1. **Grep the codebase first.** Search for the concept (e.g. `country`, `phone`, `iso`, `normalize`) and the likely names (`derive*`, `get*`, `format*`, `parse*`, `resolve*`). Look in `src/shared/utils/`, `src/tenants/**/utils/`, `lmsui/**`, and `src/tenants/<feature>/constants/helpers.ts`.
+2. **If an existing helper does the same job, import it** — do NOT write a parallel implementation under a different name. One named function = one job. Two helpers doing the same thing under different names is a bug waiting to happen.
+3. **If two duplicates already exist, consolidate.** Pick the more general / better-named one, point all consumers at it, and delete the other. Example: `getCountryIsoFromE164` (my-account) duplicated `deriveCountryIsoCode` (shared) — consolidate to the shared one.
+4. **Old logic that already works is the asset, not the enemy.** Prefer reusing or lightly extending an existing helper over writing a "clean new" version, even when the existing one lives in another module. Promote it to a shared location if needed; do not rewrite it.
+5. **Do NOT overengineer the consolidation.** If the existing helper returns `string` and a new caller wants `string | undefined`:
+
+- Do NOT add overloads, generic parameters, option bags, or `tryX` / `safeX` siblings unless a real consumer actually needs the different return shape AND there is no simpler call-site fix.
+- Prefer first: simplify the call site to live with the existing signature (e.g. let the fallback win and gate the result downstream).
+- Only split into two helpers when both signatures are genuinely needed by real, current consumers — never speculatively.
+
+6. **Cost test before duplicating.** If you are about to write a new helper, ask: "If I delete this and force-reuse the existing one, what's the worst that happens?" If the answer is "a tiny behavior tweak the call site can absorb", do that instead of duplicating.
+
+## Icons (MANDATORY)
+
+- New icons MUST be **jods**. Import from `jods/icons/icons/<kebab-name>` and render the component directly (e.g. `import { Delete02Icon } from 'jods/icons/icons/delete-02'` then `<Delete02Icon size={18} />`).
+- Do **not** add new imports from `lucide-react`, `@hugeicons/react`, or `@hugeicons/core-free-icons`. Do not wrap icons in `<HugeiconsIcon />`.
+- Lucide and Hugeicons in the tree are leftover. Do not copy them. If a file you are already editing still uses them, switch those icons to jods in the same change. Do not drive-by rewrite unrelated files.
+- For icon component types, reuse `IconWithBgComponentIcon` from `@lmsui/components/icons/icon-with-bg/types`, or `React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>`. Do not use Lucide `LucideIcon` or Hugeicons `IconSvgElement`.
+- Match the jods variant already used in the same feature (`*StrokeRoundedIcon`, `*SolidRoundedIcon`, `*DuotoneRoundedIcon`, or default `*Icon`).
+- **Card / row action menus** (`IFinanceTwoCardAction`, `IRowAction`, `StackedInfoCard`, `FinanceTwoCard`, data-table `ActionsMenu`): every visible menu item must include an `icon` (`<SomeJodsIcon size={18} />`). Match `discount-rule-card.tsx` and `installment-plan-card.tsx`.
+
+## Colors & Tailwind classes (MANDATORY)
+
+Use **Nexa design tokens** from `src/styles/colors.css` / `theme-colors.css` — class names follow `{palette}-{step}` (e.g. `primary-main`, `grey-lighter`), not generic shadcn-only shortcuts.
+
+**Do not use** (unless you confirm they map to our tokens in `theme-colors.css` — they usually do not):
+
+- `bg-primary`, `text-primary`, `border-primary`, `bg-primary/5`
+- `text-primary-foreground`, `bg-primary-foreground`
+- `bg-white` → use **`bg-white-main`**
+- `text-destructive` / bare `destructive` for errors → use **`text-error-enabled`** (or `text-error-main` / `bg-error-enabled` as appropriate)
+- Raw `text-foreground` / `border-border` only when matching an existing shadcn primitive; for brand UI prefer **`text-black-main`**, **`text-primary-main`**, **`border-grey-main`**, **`bg-grey-lighter`**
+
+**Prefer** (grep sibling components in the same module first):
+
+- **Primary:** `primary-main`, `primary-light`, `primary-lighter`, `primary-dark`, `primary-enabled`, `primary-hover`, `primary-focus`, tinted surfaces `primary-main/5`, `primary-alpha-6`, `primary-alpha-20`, `primary-alpha-50`
+- **Neutrals:** `white-main`, `black-main`, `black-light`, `grey-main`, `grey-light`, `grey-lighter`
+- **Semantic:** `error-enabled`, `error-hover`, `success-enabled`, `warning-enabled`, `info-enabled`, and matching `*-main` / `*-light` status colors
+- **Buttons:** use `@lmsui/components/button` `variant` + `tone` — avoid hand-rolled `border-primary text-primary` overrides
+
+When in doubt, copy classes from a nearby file in the same feature or from `lmsui/components/button/variants`.
+
+## Imports
+
+- Prefer **`@/`** path aliases (e.g. `@/shared/...`, `@/tenants/default/<module>/...`) for all imports that can be resolved that way.
+- **Do not** use long relative paths such as `../../..` or `../components/...` when an `@/` path exists for the same target — relative parents are harder to read and break when files move.
+
+## Don't Pass Default Values (MANDATORY)
+
+If a prop, argument, or option already has a default, do **not** pass that same value at the call site. Omit it and let the default apply.
+
+- Only pass the prop/argument when you need a **different** value than the default.
+- Example: `SearchInput` `debounceDelay` defaults to `300` — do not pass `debounceDelay={300}` or `debounceDelay: 300`. Pass it only for a non-default delay (e.g. `500` or `0`).
+
+## Permissions & Authorization (MANDATORY)
+
+1. **Always use PermissionGate for UI elements:**
+   - Wrap buttons, actions, and sensitive UI with `<PermissionGate permission={...}>`
+   - Check module constants for permission keys (e.g., `MODULE_PERMISSIONS.finance_installment_plans.edit`)
+   - Import from: `@/core/providers/authenticated-user-providers/permissions/with-permission-display`
+
+2. **Use permission hooks for logic:**
+   - Use module-specific hooks like `useInstallmentPlanPermissions()` that expose `canShow`, `canEdit`, `canCreate`, `canDestroy`
+   - Check permissions before executing sensitive operations
+   - Example: `if (!canEdit) return;` before mutations
+
+3. **Verify permission checks exist:**
+   - Edit buttons → require `edit` permission
+   - Delete buttons → require `destroy` permission
+   - View details → require `show` permission
+   - Create buttons → require `create` permission
+
+4. **Never bypass permissions:**
+   - Don't hard-code enabled/disabled states
+   - Always tie UI state to actual permission checks
+   - Permissions must control both visibility (via PermissionGate) AND behavior (via hooks)
+
+## Event Handlers & Optional Callbacks (MANDATORY)
+
+1. **Make handlers optional when they're truly optional:**
+   - If a component can work in read-only mode, make `onChange`/`onClick` optional in the interface
+   - Use optional chaining: `onSwitchDraftChange?.({ ... })` instead of passing empty callbacks
+   - Example: `onSwitchDraftChange?: (patch: Partial<TDraft>) => void` (note the `?`)
+
+2. **NEVER pass empty callbacks:**
+
+   ```typescript
+   // ❌ WRONG
+   const handleChange = useCallback(() => {
+     // Empty or comment only
+   }, []);
+   <Component onChange={handleChange} />
+
+   // ✅ RIGHT - make handler optional and don't pass it
+   <Component /> // or <Component onChange={undefined} />
+   ```
+
+3. **Disabled vs No Handler:**
+   - Use `disabled` prop when the feature exists but is temporarily unavailable
+   - Don't pass handler when the feature doesn't apply in this context (e.g., read-only view)
+   - Example: Read-only modal → `switchesDisabled={true}` + no `onSwitchDraftChange` passed
+
+## React
+
+- Functional components with hooks only
+- Split the UI from the logic in components; logic is moved to custom hooks
+- Hooks at top level, not in conditionals
+- Custom hooks start with `use`
+- **Hook responsibility:** One custom hook or `useEffect` block handles only one responsibility (e.g., fetching data, tracking, or event listening).
+- **Entity-based hook files:** Group hooks by entity, not by operation type. A file like `use-medical-notes.ts` should export both `useMedicalNotesData` and `useMedicalNotesMutations` — fetch and mutation hooks for the same entity stay in one file. Do NOT create a single `use-medical-info-data.ts` that fetches all entities, nor separate `-mutations` files per entity.
+- Components under 300 lines
+- Props interface: `IComponentNameProps`
+- Avoid inline functions in JSX (use `useCallback`)
+- Always provide keys in lists (never index)
+- Handle loading, error, empty states
+- Early returns for edge cases
+
+## TypeScript
+
+- Never use `any` - use proper types
+- Interfaces: `IUserProfile`
+- Types: `TUserRole`
+- Type guards for unknown data
+
+## Performance
+
+- useMemo for expensive calculations
+- useCallback for callbacks passed to children
+- Lazy load heavy components
+- Debounce search inputs (500ms)
+- Optimize images
+
+## Error Handling
+
+- Try-catch for async operations
+- Validate inputs at boundaries
+- Add cleanup in useEffect when needed
+
+## Code Organization
+
+- Single responsibility: one function/component = one job
+- Extract complex logic to custom hooks
+- Avoid prop drilling (use composition/context)
+- Use named constants for magic numbers/strings
+- **Custom hook file location:** Reusable custom hook logic belongs in dedicated files (e.g., `hooks/useWhatever.ts`), not inside the component file.
+- **Custom hook naming:** Names must be specific and verb-focused (e.g., `useFormValidation`, not `useData` or `useStuff`).
+- **Hook abstraction principle:** Only abstract into a custom hook when intended for reuse, isolation, or testing. Do not create a hook for single-use logic only to shrink a component.
+
+## Security
+
+- Sanitize user inputs
+- Prevent XSS, CSRF, and other attacks
+- Validate data on both client and server
+
+## Accessibility
+
+- Use semantic HTML elements
+- Add ARIA labels when needed
+- Support keyboard navigation
+
+## Git
+
+- Clear commit messages: `feat:`, `fix:`, `refactor:`, `docs:`, `style:`, `test:`, `chore:`
+- Atomic commits (one change per commit)
+
+### Branch naming (MANDATORY)
+
+- Use one of these **prefixes** (match Bitbucket branch prefixes): `bugfix/`, `feature/`, `hotfix/`, `release/`
+- Branch name must include the **ticket id** (e.g. `NL-2739`) immediately after the prefix, then a short kebab-case description.
+- Pattern: `<prefix>NL-<number>-<short-description>`
+- Examples: `bugfix/NL-2739-tax-rule-academic-year`, `feature/NL-2599-teacher-history-ai`
+- Do **not** push work on branches that skip the prefix or omit the ticket id.
+- Avoid special characters in branch names (e.g. apostrophes); use kebab-case words only.
+
+### Commit messages (MANDATORY)
+
+- Every commit on a ticket branch must **include the same ticket id** in the message (e.g. `NL-2739`).
+- Prefer: `<type>(NL-XXXX): <short summary>` — example: `fix(NL-2739): show academic year in tax rule detail modal`
+- Before `git push`, confirm branch prefix + ticket id in the branch name and in each new commit you are pushing.
+- Do **not** add repo hooks or `scripts/validate-git-*` for this unless the user explicitly asks; follow these rules in Cursor/agent workflows only.
+
+## Comments
+
+- Only for complex logic or non-obvious decisions
+- Prefer self-documenting code
+
+---
+
+## CRITICAL CONSTRAINTS
+
+### Scope Control
+
+- ONLY modify files explicitly mentioned or directly related
+- DO NOT refactor outside immediate scope until asked clearly
+- DO NOT change APIs or function signatures without permission
+- DO NOT add dependencies without asking
+- DO NOT modify config files unless requested
+- ASK first before changing related files
+
+### Shared Components: Do Not Break Existing Consumers (MANDATORY)
+
+When fixing a bug that lives in a tenant/feature page, **fix it at the call site**, not by changing a shared component in `lmsui/` or `src/shared/`. Shared components have callers across many tenants, and silent contract changes break them.
+
+Hard rules before editing anything under `lmsui/**` or `src/shared/components/**`:
+
+1. **Grep every consumer first.** Run `grep -rn "<ComponentName>" src/ lmsui/` and list every call site. If you cannot enumerate them, you cannot safely change the component.
+2. **Preserve the existing behavior contract.** If callers depend on side effects firing in a specific order (e.g. `actions?.next?.onClick?.(); onNext?.();` — both run, in that order), do NOT collapse them into an `if/else` or add an early `return`. That is a breaking change even if it looks like a refactor.
+3. **Additive only.** New props/behaviors must default to the old behavior. New branches must be gated on an explicit opt-in prop, never inferred from "is this prop defined".
+4. **If the shared component truly must change**, you MUST:
+   - Audit every consumer in the diff.
+   - Update each broken consumer in the same PR.
+   - Call it out explicitly in the PR description as a breaking change.
+5. **Default fix location is the call site.** If a page is producing duplicate side effects, stop passing the redundant handler at the page level; do not "fix" it by neutering the shared component for everyone.
+6. **Unrelated files stay out.** Do not bundle `.gitignore`, config, or sibling-feature refactors into a shared-component fix. One concern per PR.
+
+Concrete anti-pattern (do NOT do this):
+
+```diff
+- onClick={() => { actions?.next?.onClick?.(); onNext?.(); }}
++ onClick={() => {
++   if (actions?.next?.onClick) { actions.next.onClick(); return; }
++   onNext?.();
++ }}
+```
+
+This silently breaks every caller that passed an `onClick` and relied on `onNext` advancing the step. Fix the duplicate at the page (stop passing `onClick`) instead.
+
+### i18n JSON (MANDATORY)
+
+- In `src/core/i18n/tenants/**/*.json`, **never** repeat the same top-level key twice (e.g. two `"admission": { ... }` blocks). Standard `JSON.parse` keeps only the **last** duplicate key and drops the first silently — translations disappear at runtime and `t("some.key")` shows the literal key.
+
+### Strict Architecture Boundaries (MANDATORY)
+
+- NEVER define `interface`, `type`, `enum`, or API DTOs inside:
+  - `**/components/**/*.tsx`
+  - `**/hooks/**/*.ts`
+  - `**/hooks/**/*.tsx`
+  - `**/services/**/*.ts`
+- All types/interfaces MUST live in `**/types/**/*.ts`.
+- All business constants (API_BASE, keys, config maps, static arrays) MUST live in `**/constants/**/*.ts`.
+- All mappers/parsers/normalizers MUST live in `**/utils/**/*.ts`.
+- Components/hooks/services may only import these; they must not define them inline.
+
+### No Duplicate Type Definitions (MANDATORY)
+
+- NEVER duplicate API or domain interfaces across files.
+- If a type already exists, reuse it from `types/`.
+- If a new type is needed, define it once in the nearest feature `types/` file and reference it everywhere else.
+
+### Pre-Final Self-Check (REQUIRED)
+
+Before finishing any task:
+
+1. Scan edited `components/`, `hooks/`, and `services/` files.
+2. If any new type/interface/constant/mapper exists inline, move it to `types/`, `constants/`, or `utils/`.
+3. Update barrel exports if needed.
+4. Run lint/type checks for touched files.
+
+### Pre-Push Review Checklist (MANDATORY)
+
+Before pushing ANY branch — whether by me, Cursor, or another agent — work through this checklist explicitly and fix anything that fails. Treat the checklist itself as code: if a step does not apply, say so out loud, don't silently skip it. Re-inspect `git status` and stage only the files this task needs; unrelated changes (`.gitignore`, configs, sibling features) are a frequent source of avoidable PR churn.
+
+**1. Scope & Diff Hygiene**
+
+- [ ] `git diff` reviewed end-to-end; every hunk maps to the stated task.
+- [ ] No unrelated files in the diff (`.gitignore`, configs, sibling features). If a refactor crept in, split it to its own commit.
+- [ ] No leftover `console.log`, `debugger`, dead branches, commented-out blocks, or `// TODO` for things you actually did.
+- [ ] Commit messages follow `feat: / fix: / refactor: / docs: / style: / test: / chore:` and are atomic (one logical change per commit).
+
+**2. Shared / Cross-Tenant Surface**
+
+- [ ] Any edit under `lmsui/**` or `src/shared/components/**`? If yes, every consumer was greped and either still works or was updated in the same PR. See "Shared Components: Do Not Break Existing Consumers".
+- [ ] Any type widening/narrowing in `src/tenants/*/types/api.ts` or `src/shared/types/**`? Grep all readers; confirm none break. Call it out in the PR description as a contract change.
+- [ ] No new exports added "just in case" — only export what has a current consumer.
+
+**3. API Contract (read vs write model)**
+
+- [ ] The PUT/POST body matches what the backend actually expects (verify against a real cURL or Swagger sample). DO NOT spread a GET-shaped object into a write body — they are different types.
+- [ ] Read shapes (`IApiX`) and write shapes (`IUpdateXRequest` / `ICreateXRequest`) are separate interfaces.
+- [ ] Nested objects from the read model (e.g. `category: { id, name }`) are normalized to the write shape (e.g. `category: "slug"`) inside a util in `utils/`, not inline at the call site.
+- [ ] No `Number(slug)`-style coercions that silently produce `NaN` or `"[object Object]"`.
+- [ ] Client-side defaults (`?? true`, `?? false`, `?? []`) that fill missing server values are either intentional (with a comment) or removed.
+
+**4. Architecture Boundaries**
+
+- [ ] No `interface` / `type` / `enum` / DTO defined inside `components/`, `hooks/`, or `services/`. All live in `types/`.
+- [ ] No business constants in `constants/` files that are actually functions — those belong in `utils/`.
+- [ ] No `useQueryClient` imported in mutation hooks; uses `useApiMutation`'s `invalidateQueries`.
+- [ ] No native form state — uses `react-hook-form + zodResolver`.
+- [ ] No `useState`-based custom validation loops.
+
+**5. React Hygiene**
+
+- [ ] All hooks at top level, never in conditionals.
+- [ ] `useCallback` deps complete (including derived deps like `xxx.length` when used inside).
+- [ ] No new `any`; no `as any` casts.
+- [ ] List keys are stable IDs, never the array index.
+- [ ] Loading / error / empty states handled.
+
+**6. Magic Numbers & Strings**
+
+- [ ] Replaced hardcoded step indices, role IDs, status strings, and similar with derived values (`steps.length - 1`) or named constants in `constants/`.
+- [ ] No comments that describe WHAT the code does instead of self-documenting code.
+
+**7. Behavior Verification**
+
+- [ ] Manually tested the golden path AND at least one edge case in the browser. Type checks ≠ feature checks.
+- [ ] If a bug fix: verified the bug no longer reproduces using the original repro steps.
+- [ ] If a shared component or util was touched: smoke-tested at least one OTHER consumer to confirm no regression.
+
+**8. Build & Validate**
+
+- [ ] `pnpm validate` passes (lint + typecheck + custom validators).
+- [ ] `pnpm build` succeeds locally (the pre-commit hook will run this; do not bypass with `--no-verify`).
+
+**9. PR Description**
+
+- [ ] One-paragraph summary of WHY, not just WHAT.
+- [ ] Explicitly lists: any shared-type/contract changes, any new defaults baked client-side, any non-obvious behavior changes.
+- [ ] Includes a manual test list a reviewer can replay.
+
+If any item fails, fix it before pushing. If any item is intentionally skipped, say so in the PR description with a one-line reason.
+
+### Code Changes
+
+- DO NOT rewrite working code unless bug or explicit request
+- DO NOT change working names
+- DO NOT add unrequested features
+- DO NOT remove functionality without confirmation
+- PRESERVE existing error handling
+- MAINTAIN backward compatibility
+
+### Process
+
+1. Understand existing patterns FIRST
+2. Follow EXACT same conventions
+3. Ask which pattern to follow if multiple exist
+4. Match existing code style
+5. Keep changes minimal
+
+### Communication
+
+- ASK questions if unclear
+- STATE assumptions explicitly
+- WARN about potential issues
+- EXPLAIN if changes needed outside scope
+
+### Response
+
+- Complete code blocks (no "...")
+- Show full function/component
+- Indicate which file
+- Explain WHY changes made
+
+---
+
+## Service Layer Rules
+
+### One Service Function = One API Endpoint (MANDATORY)
+
+Each service function must call exactly one API endpoint. NEVER write a function that takes a discriminator (section, type, action) and branches to multiple different endpoints with if/switch.
+
+```typescript
+// ❌ WRONG — god-function branching to multiple endpoints
+async function upsertItem(payload: { section: "alerts" | "notes"; ... }) {
+  if (payload.section === "alerts") { await PUT("/medical-alerts/..."); }
+  if (payload.section === "notes") { await PUT("/medical-notes/..."); }
+}
+
+// ✅ RIGHT — one function, one endpoint
+async function updateMedicalAlert(id: number, payload: IUpsertAlertPayload) {
+  await PUT(`/medical-alerts/${id}`, payload);
+}
+async function updateMedicalNote(id: number, payload: IUpsertNotePayload) {
+  await PUT(`/medical-notes/${id}`, payload);
+}
+```
+
+### API Types Belong in `types/api.ts` (MANDATORY)
+
+All API request/response shapes (DTOs, response wrappers) must live in `types/api.ts`. Domain/view types live in `types/index.ts`. Never put API shapes in `services/` files — services may only import types, not define them.
+
+```typescript
+// ❌ WRONG — API response shape defined inside services/
+// services/types.ts  ← this file should not exist
+export interface IApiMedicalAlert { id: string; alert_name: string; ... }
+
+// ✅ RIGHT
+// types/api.ts
+export interface IApiMedicalAlert { id: string; alert_name: string; ... }
+// types/index.ts
+export interface IAlertInfoRow { id: number; alertName: string; ... }  // view/domain type
+// services/medical-alerts.ts
+import type { IApiMedicalAlert } from "../types/api";
+```
+
+---
+
+## Form Validation Rules
+
+### Always Use react-hook-form + zodResolver (MANDATORY)
+
+All form validation must use `react-hook-form` with `zodResolver`. NEVER use `useState` + a manual validation loop for form fields.
+
+```typescript
+// ❌ WRONG — manual form state
+const [values, setValues] = useState<TFormValues>({});
+const [errors, setErrors] = useState<TFormErrors>({});
+const handleSubmit = () => {
+  const nextErrors: TFormErrors = {};
+  fields.forEach((f) => { if (f.required && !values[f.key]) nextErrors[f.key] = "required"; });
+  if (Object.keys(nextErrors).length > 0) { setErrors(nextErrors); return; }
+  onSubmit(values);
+};
+
+// ✅ RIGHT
+const schema = z.object({ name: z.string().min(1, t("required")), ... });
+const form = useForm({ resolver: zodResolver(schema), defaultValues });
+const onSubmit = form.handleSubmit((values) => { /* ... */ });
+```
+
+For forms with dynamic fields (config-driven field arrays), build the zod schema dynamically with `useMemo` from the fields config before calling `useForm`.
+
+---
+
+## Constants vs Utils Rules
+
+### Utility Functions Belong in `utils/`, Not `constants/` (MANDATORY)
+
+`constants/` is for static values: API_BASE strings, magic numbers, enum-like maps, static option arrays. Formatter functions, parsers, and helpers belong in `utils/`. Never export a function from a constants file.
+
+```typescript
+// ❌ WRONG — function in constants
+// constants/my-feature.ts
+export const formatDateValue = (value: string): string => { ... };
+
+// ✅ RIGHT
+// constants/my-feature.ts
+export const API_BASE = "/my-endpoint";
+// utils/my-feature.ts
+export const formatDateValue = (value: string): string => { ... };
+```
+
+### Static Config Data Belongs in `constants/`, Not Hooks (MANDATORY)
+
+Column definitions and form field configs that only depend on the translation function `t` are static configuration. They must live in `constants/` as factory functions that accept `t`. Do not put them inside hooks.
+
+```typescript
+// ❌ WRONG — static config inside a hook
+function useTableConfig(t: TFunction) {
+  const columns = useMemo(() => [{ key: 'name', header: t('common:name'), sortable: false }], [t]);
+  return { columns };
+}
+
+// ✅ RIGHT
+// constants/table-config.ts
+export const getNameColumns = (t: TFunction): IColumn[] => [
+  { key: 'name', header: t('common:name'), sortable: false },
+];
+// In component:
+const columns = useMemo(() => getNameColumns(t), [t]);
+```
+
+---
+
+## Mutation & Cache Invalidation Rules
+
+### Use `useApiMutation` `invalidateQueries` — Never Import `useQueryClient` (MANDATORY)
+
+`useApiMutation` accepts an `invalidateQueries?: QueryKey` parameter that automatically calls `queryClient.invalidateQueries()` after a successful mutation. Always use this instead of manually importing `useQueryClient` and calling it inside `onSuccess`.
+
+```typescript
+// ❌ WRONG — manual useQueryClient import
+import { useQueryClient } from '@tanstack/react-query';
+
+function useMyMutations() {
+  const queryClient = useQueryClient();
+  const mutation = useApiMutation({
+    request: (id: number) => deleteItem(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['items'] }); // ← wrong
+      customToast.success({ title: 'Deleted' });
+    },
+  });
+}
+
+// ✅ RIGHT — built-in invalidateQueries parameter
+function useMyMutations() {
+  const mutation = useApiMutation({
+    request: (id: number) => deleteItem(id),
+    invalidateQueries: ['items'], // ← correct
+    onSuccess: () => {
+      customToast.success({ title: 'Deleted' });
+    },
+  });
+}
+```
+
+If you need to invalidate multiple query keys, pass them all in the array. The wrapper handles it.
+
+---
+
+## Variable Naming Rules (MANDATORY)
+
+Name variables by **what they represent to the reader**, not by their implementation detail or inverse.
+
+### Booleans
+
+- Name from the **affirmative condition** — never invent a "ready/done/initialized" flag when "loading/fetching/pending" is the real state.
+- Prefix: `is`, `has`, `can`, `should` — pick the one that reads naturally in plain English.
+
+```typescript
+// ❌ Wrong — inverted, describes internal state not the condition the reader cares about
+const [isEditFormReady, setIsEditFormReady] = useState(false);
+if (!isEditFormReady) {
+  /* ... */
+}
+
+// ✅ Right — loading is the active condition
+const [isApplyingFetchedEditValues, setIsApplyingFetchedEditValues] = useState(isEdit);
+const isEditPageLoading = isEdit && (isFetching || isApplyingFetchedEditValues);
+if (isEditPageLoading) {
+  /* ... */
+}
+```
+
+- Composed booleans get a **derived const** at the point of use that names the combined intent:
+
+```typescript
+// ❌ Wrong — inline expression hides intent
+{isEdit && (!isEditFormReady || isFetching) ? <Spinner /> : <Form />}
+
+// ✅ Right — named const that reads like a sentence
+const isEditPageLoading = isEdit && (isFetching || isApplyingFetchedEditValues);
+{isEditPageLoading ? <Spinner /> : <Form />}
+```
+
+### Loading / fetching states
+
+- `isFetching` — network request in flight.
+- `isApplying<Something>` — response received, applying/hydrating to local state.
+- `isLoading` — either of the above when you don't need to distinguish.
+- Never `isNotLoaded`, `isUninitialized`, `isReady` — always name the **active** condition, not its absence.
+
+### General rules
+
+- Names must answer: **"what is true right now?"**, not **"what happened internally?"**
+- Avoid negation in the name (`isNotReady`, `hasNoError`) — flip the condition or restructure the code.
+- Handlers: `handle<Event>` for component callbacks (`handleClose`, `handleSubmit`). Never `onClick1`, `doSave`.
+- Async fetchers inside effects: `fetch<Entity>` or `sync<Entity>`, never `getData` or `run`.
+- Derived constants that combine multiple flags: name the **use-case** (`isEditPageLoading`), not the formula (`isFetchingOrNotReady`).
+
+---
+
+## Common Mistakes to Avoid
+
+### Stale Closures
+
+```typescript
+// ❌ Wrong
+useEffect(() => {
+  setInterval(() => setCount(count + 1), 1000);
+}, []);
+
+// ✅ Right
+useEffect(() => {
+  setInterval(() => setCount((c) => c + 1), 1000);
+}, []);
+```
+
+### Missing Cleanup
+
+```typescript
+// ❌ Wrong
+useEffect(() => {
+  fetch('/api/data').then(setData);
+}, []);
+
+// ✅ Right
+useEffect(() => {
+  let mounted = true;
+  fetch('/api/data').then((d) => mounted && setData(d));
+  return () => {
+    mounted = false;
+  };
+}, []);
+```
+
+### Derived State
+
+```typescript
+// ❌ Wrong
+const [total, setTotal] = useState(0);
+useEffect(() => setTotal(sum(items)), [items]);
+
+// ✅ Right
+const total = useMemo(() => sum(items), [items]);
+```
+
+### Inline Objects
+
+```typescript
+// ❌ Wrong
+<Button style={{ padding: 10 }}>Click</Button>
+
+// ✅ Right
+<Button className="p-2.5">Click</Button>
+```
+
+### Missing Dependencies
+
+```typescript
+// ❌ Wrong
+useEffect(() => {
+  fetchData(userId);
+}, []); // Missing userId!
+
+// ✅ Right
+useEffect(() => {
+  fetchData(userId);
+}, [userId]);
+```
+
+### Object as Dependency
+
+```typescript
+// ❌ Wrong - infinite loop
+const options = { page: 1 };
+useEffect(() => {
+  fetch(options);
+}, [options]);
+
+// ✅ Right
+const options = useMemo(() => ({ page: 1 }), []);
+useEffect(() => {
+  fetch(options);
+}, [options]);
+```
+
+---
+
+## Dead Code (MANDATORY)
+
+Before finishing any task:
+
+- Delete unused exports, helpers, types, props, and commented-out code.
+- Do not keep “for later” or unused aliases.
+- Grep new exports — if nothing imports them, remove or unexport them.
+
+## Quick Checklist
+
+- [ ] No `any` types
+- [ ] All states handled (loading/error/empty)
+- [ ] useEffect dependencies correct
+- [ ] Cleanup added when needed
+- [ ] Expensive calcs memoized
+- [ ] Components under 300 lines
+- [ ] Proper types
+- [ ] Followed existing patterns
+- [ ] Each service function calls exactly ONE endpoint (no branching on section/type)
+- [ ] API DTOs in `types/api.ts`, domain/view types in `types/index.ts`
+- [ ] Forms use react-hook-form + zodResolver (no manual useState validation)
+- [ ] Utility functions in `utils/`, not in `constants/`
+- [ ] Static config (columns, field configs) in `constants/` factory functions, not in hooks
+- [ ] No `useQueryClient` imported in mutation hooks — using `invalidateQueries` param on `useApiMutation` instead
+- [ ] No dead code (unused exports / helpers / types) in touched files

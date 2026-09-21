@@ -1,0 +1,155 @@
+import type { IDictionary } from "@/types";
+
+export const en: IDictionary = {
+  seo: {
+    title: "OKAN Coffee House | Salmiya, Kuwait",
+    description:
+      "A calm place for carefully crafted coffee, warm conversations and meaningful moments.",
+    menuTitle: "Menu",
+    menuDescription: "Coffee and tea at OKAN.",
+    notFoundTitle: "Page not found",
+  },
+  nav: {
+    story: "Story",
+    coffee: "Coffee",
+    space: "The Space",
+    visit: "Visit",
+  },
+  cta: {
+    order: "Order Online",
+    discover: "Discover Okan",
+    visit: "Visit Us",
+    menu: "View Full Menu",
+    directions: "Get Directions",
+    instagram: "Instagram",
+    tiktok: "TikTok",
+    call: "Call",
+    whatsapp: "WhatsApp",
+    email: "Email",
+    journal: "Journal",
+    home: "Home",
+  },
+  hero: {
+    headline: "A quiet start to a different day.",
+    body: "Coffee, conversations, and carefully considered moments.",
+  },
+  statement: {
+    lead: "Coffee is only part of the moment.",
+    body: "OKAN is a place for slow mornings, warm conversations, and the details that make ordinary moments meaningful.",
+  },
+  story: {
+    number: "01",
+    label: "The Story",
+    headline: "A room for coffee, conversation, and ordinary hours.",
+    body: "OKAN began with the idea of creating a place where coffee, conversations, design, and beautiful everyday moments could naturally come together. The space has been shaped carefully and intentionally — not as a backdrop, but as part of the cup.",
+  },
+  space: {
+    number: "02",
+    label: "The Space",
+    headline: "Designed for the moment.",
+    body: "Natural wood. Quiet marble. Soft colour. Open rooms that hold morning light, and the small details you notice on a second visit.",
+  },
+  materials: {
+    number: "03",
+    label: "Material & Texture",
+    headline: "The room is made of touch.",
+    items: {
+      marble: "Stone",
+      wood: "Wood",
+      tile: "Tile",
+      earth: "Earth",
+    },
+  },
+  coffee: {
+    number: "04",
+    label: "The Journey of Coffee",
+    headline: "From origin to the table.",
+    stages: {
+      beans: {
+        number: "01",
+        title: "Beans",
+        body: "Carefully selected coffee with attention to origin and character.",
+      },
+      extraction: {
+        number: "02",
+        title: "Extraction",
+        body: "Every cup prepared with precision and balance.",
+      },
+      serving: {
+        number: "03",
+        title: "Serving",
+        body: "Prepared and presented with attention to small details.",
+      },
+      experience: {
+        number: "04",
+        title: "Experience",
+        body: "Coffee, design and meaningful moments coming together.",
+      },
+    },
+  },
+  menu: {
+    number: "05",
+    label: "Menu",
+    headline: "A short, considered list.",
+    body: "A few things, made well. The full list lives with the bar.",
+    categories: {
+      espresso: "Espresso",
+      filter: "Filter",
+      milk: "Milk",
+      tea: "Tea",
+    },
+  },
+  gallery: {
+    number: "06",
+    label: "Moments",
+    headline: "Moments at Okan",
+  },
+  sunflower: {
+    kicker: "A little light",
+    headline: "Always turning toward the light.",
+    body: "Warmth. Growth. The quiet habit of looking up.",
+  },
+  visit: {
+    number: "07",
+    label: "Visit",
+    headline: "Visit Okan",
+    body: "Come as you are. Stay as long as the morning allows.",
+    placeLabel: "Place",
+    hoursLabel: "Hours",
+    locationLabel: "Location",
+    placeName: "Okan Coffee House",
+    locality: "Salmiya, Kuwait",
+    address: "82QX+HXM, Salmiya, Hawalli Governorate, Kuwait",
+    scan: "Scan to explore",
+    hours: [{ days: "Daily", time: "7:00 AM – 12:00 AM" }],
+  },
+  footer: {
+    line: "A quiet start to a different day.",
+  },
+  captions: {
+    hero: "Morning light",
+    story: "The room, unhurried",
+    spaceWide: "Open space, quiet architecture",
+    spaceDetail: "Marble, oak, ceramic",
+  },
+  a11y: {
+    home: "OKAN home",
+    skip: "Skip to content",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    primaryNav: "Primary",
+    mobileNav: "Mobile",
+    footerNav: "Footer",
+    orderSoon: "Order Online will connect to Foodics when the URL is provided",
+    map: "Map of OKAN in Salmiya",
+    instagramQr: "QR code for OKAN on Instagram",
+  },
+  notFound: {
+    headline: "This page is not here.",
+    body: "The morning still is. Come back to OKAN.",
+  },
+  language: {
+    en: "EN",
+    ar: "AR",
+  },
+};

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="190 66 132 426" role="img" aria-labelledby="title desc">
+  <title id="title">OKAN colored flower vase logo</title>
+  <desc id="desc">OKAN flower-and-vase mark using the website palette: sunflower yellow, muted olive, and warm wood brown.</desc>
+  <defs>
+    <mask id="okan-color-flower-hole">
+      <rect x="190" y="66" width="132" height="426" fill="#fff"/>
+      <circle cx="255" cy="126" r="13" fill="#000"/>
+    </mask>
+  </defs>
+
+  <!-- Sunflower -->
+  <g fill="#F5B72E" mask="url(#okan-color-flower-hole)">
+    <ellipse cx="256" cy="93" rx="16" ry="24"/>
+    <ellipse cx="286" cy="105" rx="16" ry="24" transform="rotate(48 286 105)"/>
+    <ellipse cx="294" cy="136" rx="16" ry="24" transform="rotate(94 294 136)"/>
+    <ellipse cx="271" cy="160" rx="16" ry="24" transform="rotate(142 271 160)"/>
+    <ellipse cx="241" cy="158" rx="16" ry="24" transform="rotate(188 241 158)"/>
+    <ellipse cx="220" cy="134" rx="16" ry="24" transform="rotate(236 220 134)"/>
+    <ellipse cx="226" cy="104" rx="16" ry="24" transform="rotate(284 226 104)"/>
+  </g>
+
+  <!-- Stem + leaves -->
+  <g fill="#62644B">
+    <rect x="251" y="164" width="8" height="109" rx="4"/>
+    <path d="M247 212c-27 2-43 13-44 41 23 2 39-7 44-29z"/>
+    <path d="M263 212c27 2 43 13 44 41-23 2-39-7-44-29z"/>
+  </g>
+
+  <!-- Vase -->
+  <g fill="#895A3D">
+    <rect x="222" y="273" width="66" height="10" rx="5"/>
+    <path d="M227 281c3 18 11 31-3 53-19 29-28 48-27 72 1 21 12 48 23 78h70c11-30 23-57 24-78 1-24-8-43-27-72-14-22-6-35-3-53z"/>
+  </g>
+</svg>
