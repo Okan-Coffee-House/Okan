@@ -18,26 +18,27 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - `constants/okan.ts` — name, address, hours, Instagram, maps, geo
 - `content/messages/en.ts` and `content/messages/ar.ts` — page copy
-- `content/menu.ts` — mock menu until Foodics is connected
+- `content/coffees.ts` — current V60 / espresso coffees (hidden until `verified: true` with a `sourceUrl`)
+- `constants/content.ts` — `HAS_VERIFIED_MENU` (keep false until a real menu is uploaded)
 - `content/images.ts` — image paths, alt text, captions
-- `.env.local` — Foodics order URL, optional phone / WhatsApp / analytics
+- `.env.local` — Foodics order URL, optional WhatsApp / analytics
 
 ## Replace photography
 
-Drop client files into `public/images/` using the same filenames:
+Drop files into `public/` using the same paths as `content/images.ts`:
 
-- `okan-hero.jpg`
-- `story-01.jpg`
-- `space-01.jpg`, `space-02.jpg`
-- `coffee-beans.jpg`, `extraction.jpg`, `serving.jpg`, `experience.jpg`
-- `sunflower.jpg`
-- `moment-01.jpg` … `moment-06.jpg`
-- `material-marble.jpg`, `material-wood.jpg`, `material-tile.jpg`, `material-earth.jpg`
+- `hero/hero-v60.webp`
+- `images/coffee-v60.webp`, `coffee-v60-bar.webp`, `coffee-espresso.webp`, `flat-white.webp`
+- `images/warm-scandinavian-cafe-interior.webp`, `sunlit-minimalist-cafe-nook.webp`
+- `images/sunlit-okan-coffee-house-patio.webp`, `sunlit-minimalist-coffee-bar.webp`
+- `images/sunlit-sunflower-coffee-nook.webp`
+- gallery stills listed under `photos.moments`
 
 Current images are concept placeholders, not production client photography.
 
 ## Notes
 
-- Order Online stays disabled until `NEXT_PUBLIC_FOODICS_ORDER_URL` is set.
+- Order Online is hidden until `NEXT_PUBLIC_FOODICS_ORDER_URL` is set.
+- WhatsApp is hidden until `NEXT_PUBLIC_WHATSAPP_URL` is set.
+- View Full Menu is hidden until `HAS_VERIFIED_MENU` is true.
 - Analytics scripts are not loaded until measurement IDs are provided.
-- See `OKAN-BUILD-REPORT.md` for what is built and what is still needed from the client.

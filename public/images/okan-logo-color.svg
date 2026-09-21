@@ -9,7 +9,7 @@
   </defs>
 
   <!-- Sunflower -->
-  <g fill="#F5B72E" mask="url(#okan-color-flower-hole)">
+  <g fill="#FFB73A" mask="url(#okan-color-flower-hole)">
     <ellipse cx="256" cy="93" rx="16" ry="24"/>
     <ellipse cx="286" cy="105" rx="16" ry="24" transform="rotate(48 286 105)"/>
     <ellipse cx="294" cy="136" rx="16" ry="24" transform="rotate(94 294 136)"/>

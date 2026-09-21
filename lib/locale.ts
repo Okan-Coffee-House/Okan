@@ -40,3 +40,16 @@ export function switchLocalePath(pathname: string, nextLocale: TLocale): string 
   }
   return `/${nextLocale}${pathname}`;
 }
+
+export function resolveNavHref(pathname: string, href: string): string {
+  const hashIndex = href.indexOf("#");
+  if (hashIndex === -1) {
+    return href;
+  }
+
+  const targetPath = href.slice(0, hashIndex).replace(/\/$/, "") || "/";
+  const currentPath = pathname.replace(/\/$/, "") || "/";
+  const hash = href.slice(hashIndex);
+
+  return currentPath === targetPath ? hash : href;
+}

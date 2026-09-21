@@ -1,21 +1,25 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { useHashNavigation } from "@/components/HashLink";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { Logo } from "@/components/Logo";
 import { useSite } from "@/components/LocaleProvider";
 import { OrderLink } from "@/components/OrderLink";
 import { okanEase } from "@/components/Reveal";
 import { getOrderUrl } from "@/lib/foodics";
-import { withLocale } from "@/lib/locale";
+import { resolveNavHref, withLocale } from "@/lib/locale";
 import type { IMobileMenuProps } from "@/types";
 
 export function MobileMenu({ open, onClose }: IMobileMenuProps) {
   const reduce = useReducedMotion();
   const orderUrl = getOrderUrl();
+  const pathname = usePathname();
   const { locale, dictionary, nav } = useSite();
+  const visitHref = resolveNavHref(pathname, withLocale(locale, "/#visit"));
+  const navigate = useHashNavigation();
 
   useEffect(() => {
     if (!open) return;
@@ -34,6 +38,15 @@ export function MobileMenu({ open, onClose }: IMobileMenuProps) {
     };
   }, [open, onClose]);
 
+  const handleHrefClick = (event: { preventDefault: () => void }, href: string) => {
+    event.preventDefault();
+    onClose();
+    const delay = reduce ? 0 : 320;
+    window.setTimeout(() => {
+      navigate(href);
+    }, delay);
+  };
+
   return (
     <AnimatePresence>
       {open ? (
@@ -46,24 +59,28 @@ export function MobileMenu({ open, onClose }: IMobileMenuProps) {
         >
           <nav aria-label={dictionary.a11y.mobileNav}>
             <ul className="flex flex-col gap-1">
-              {nav.map((item, index) => (
-                <li key={item.href}>
-                  <motion.a
-                    href={item.href}
-                    onClick={onClose}
-                    className="display block py-2"
-                    initial={reduce ? false : { opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.55,
-                      delay: reduce ? 0 : 0.08 * index,
-                      ease: okanEase,
-                    }}
-                  >
-                    {item.label}
-                  </motion.a>
-                </li>
-              ))}
+              {nav.map((item, index) => {
+                const href = resolveNavHref(pathname, item.href);
+
+                return (
+                  <li key={item.href}>
+                    <motion.a
+                      href={href}
+                      onClick={(event) => handleHrefClick(event, href)}
+                      className="display block py-2"
+                      initial={reduce ? false : { opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.55,
+                        delay: reduce ? 0 : 0.08 * index,
+                        ease: okanEase,
+                      }}
+                    >
+                      {item.label}
+                    </motion.a>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
           <div className="mt-10 flex flex-col gap-5">
@@ -74,13 +91,13 @@ export function MobileMenu({ open, onClose }: IMobileMenuProps) {
                 →
               </span>
             </OrderLink>
-            <Link
-              href={withLocale(locale, "/#visit")}
-              onClick={onClose}
+            <a
+              href={visitHref}
+              onClick={(event) => handleHrefClick(event, visitHref)}
               className="link-underline w-fit"
             >
               {dictionary.cta.visit}
-            </Link>
+            </a>
           </div>
           <div className="mt-auto pt-16">
             <Logo />

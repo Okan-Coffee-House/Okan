@@ -3,11 +3,7 @@ import type { IOrderLinkProps } from "@/types";
 
 export function OrderLink({ href, className, children }: IOrderLinkProps) {
   if (!href) {
-    return (
-      <span className={cn(className, "cursor-not-allowed opacity-40")} aria-disabled="true">
-        {children}
-      </span>
-    );
+    return null;
   }
 
   return (
@@ -15,7 +11,7 @@ export function OrderLink({ href, className, children }: IOrderLinkProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={className}
+      className={cn(className)}
     >
       {children}
     </a>

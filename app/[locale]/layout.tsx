@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/Footer";
+import { HashScroll } from "@/components/HashLink";
 import { Header } from "@/components/Header";
 import { LocaleProvider } from "@/components/LocaleProvider";
+import { LocaleTransition } from "@/components/Reveal";
 import { SkipLink } from "@/components/SkipLink";
 import { LOCALES } from "@/constants/locales";
 import { OKAN } from "@/constants/okan";
@@ -33,7 +35,9 @@ export async function generateMetadata({
       OKAN.category,
       OKAN.city,
       OKAN.country,
-      "coffee house",
+      "specialty coffee",
+      "V60",
+      "pour-over",
     ],
     alternates: {
       canonical: withLocale(locale),
@@ -48,13 +52,13 @@ export async function generateMetadata({
       locale: locale === "ar" ? "ar_KW" : "en_US",
       url: `${env.siteUrl}${withLocale(locale)}`,
       siteName: OKAN.shortName,
-      title: dictionary.seo.title,
-      description: dictionary.seo.description,
+      title: dictionary.seo.ogTitle,
+      description: dictionary.seo.ogDescription,
     },
     twitter: {
       card: "summary_large_image",
-      title: dictionary.seo.title,
-      description: dictionary.seo.description,
+      title: dictionary.seo.ogTitle,
+      description: dictionary.seo.ogDescription,
     },
   };
 }
@@ -72,9 +76,10 @@ export default async function LocaleLayout({
 
   return (
     <LocaleProvider locale={locale} dictionary={dictionary}>
+      <HashScroll />
       <SkipLink />
       <Header />
-      {children}
+      <LocaleTransition locale={locale}>{children}</LocaleTransition>
       <Footer />
     </LocaleProvider>
   );

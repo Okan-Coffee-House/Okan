@@ -8,7 +8,7 @@ export const env = {
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED_URL || OKAN.mapsEmbedUrl,
   instagramUrl: process.env.NEXT_PUBLIC_INSTAGRAM_URL || OKAN.instagramUrl,
   tiktokUrl: process.env.NEXT_PUBLIC_TIKTOK_URL || OKAN.tiktokUrl,
-  whatsappUrl: process.env.NEXT_PUBLIC_WHATSAPP_URL || OKAN.whatsappUrl,
+  whatsappUrl: process.env.NEXT_PUBLIC_WHATSAPP_URL || "",
   phone: process.env.NEXT_PUBLIC_PHONE || OKAN.phone,
   email: process.env.NEXT_PUBLIC_EMAIL || OKAN.email,
   journalUrl: process.env.NEXT_PUBLIC_JOURNAL_URL || OKAN.journalUrl,

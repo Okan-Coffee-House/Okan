@@ -4,10 +4,21 @@ import type { IDictionary, INavItem, TLocale } from "@/types";
 
 export function getNav(locale: TLocale, dictionary: IDictionary): INavItem[] {
   return [
-    { href: withLocale(locale, "/#story"), label: dictionary.nav.story },
     { href: withLocale(locale, "/#coffee"), label: dictionary.nav.coffee },
+    { href: withLocale(locale, "/#menu"), label: dictionary.nav.menu },
     { href: withLocale(locale, "/#space"), label: dictionary.nav.space },
     { href: withLocale(locale, "/#visit"), label: dictionary.nav.visit },
+  ];
+}
+
+export function getFooterNav(locale: TLocale, dictionary: IDictionary): INavItem[] {
+  return [
+    { href: withLocale(locale, "/#coffee"), label: dictionary.nav.coffee },
+    { href: withLocale(locale, "/#brew-methods"), label: dictionary.footer.brew },
+    { href: withLocale(locale, "/#menu"), label: dictionary.nav.menu },
+    { href: withLocale(locale, "/#space"), label: dictionary.nav.space },
+    { href: withLocale(locale, "/#moments"), label: dictionary.footer.around },
+    { href: withLocale(locale, "/#visit"), label: dictionary.cta.visit },
   ];
 }
 

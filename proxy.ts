@@ -5,6 +5,7 @@ import { getLocale, isLocale } from "@/lib/locale";
 const STATIC_PREFIXES = [
   "/_next",
   "/images",
+  "/hero",
   "/icon",
   "/apple-icon",
   "/opengraph-image",

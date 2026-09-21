@@ -12,11 +12,20 @@ export function Photo({
   sizes,
   priority = false,
   quality = 75,
+  tone = "editorial",
 }: IPhotoProps) {
   const [hasFailed, setHasFailed] = useState(false);
+  const isGraded = tone !== "plain";
 
   return (
-    <div className={cn("relative overflow-hidden bg-warm", className)}>
+    <div
+      className={cn(
+        "relative overflow-hidden bg-warm",
+        isGraded && "okan-photo-wrap",
+        tone === "sunflower" && "okan-photo-wrap--sunflower",
+        className,
+      )}
+    >
       <div
         className={cn("absolute inset-0", `fallback-${photo.fallback}`)}
         aria-hidden="true"
@@ -29,7 +38,12 @@ export function Photo({
           sizes={sizes}
           priority={priority}
           quality={quality}
-          className={cn("object-cover", imageClassName)}
+          className={cn(
+            "object-cover",
+            isGraded && "okan-photo",
+            tone === "sunflower" && "okan-photo--sunflower",
+            imageClassName,
+          )}
           onError={() => setHasFailed(true)}
         />
       ) : null}

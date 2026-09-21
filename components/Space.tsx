@@ -1,56 +1,93 @@
 "use client";
 
-import { ParallaxImage } from "@/components/ParallaxImage";
 import { Photo } from "@/components/Photo";
-import { Reveal } from "@/components/Reveal";
+import { Reveal, RevealImage, RevealText } from "@/components/Reveal";
 import { SectionMeta } from "@/components/SectionMeta";
 import { useSite } from "@/components/LocaleProvider";
 import { photos } from "@/content/images";
+import type { IPhotoAsset, TSpacePhotoKey } from "@/types";
+
+const SPACE_PHOTOS: Record<TSpacePhotoKey, IPhotoAsset> = {
+  wide: photos.spaceWide,
+  nook: photos.spaceNook,
+  outside: photos.spaceOutdoor,
+  bar: photos.spaceBar,
+};
 
 export function Space() {
   const { dictionary } = useSite();
 
   return (
-    <section id="space" className="scroll-mt-24 bg-warm/60 px-0 py-[var(--pad-y)] md:pb-40">
-      <div className="mx-auto max-w-[1600px] px-[var(--pad-x)]">
-        <Reveal className="max-w-[36rem]">
-          <SectionMeta number={dictionary.space.number} label={dictionary.space.label} />
-          <h2 className="section-title">{dictionary.space.headline}</h2>
-          <p className="mt-6 max-w-[42ch] text-ink/70">{dictionary.space.body}</p>
-        </Reveal>
-
-        <div className="relative mt-14 lg:mt-20">
-          <Reveal y={24}>
-            <figure>
-              <ParallaxImage
-                photo={photos.spaceWide}
-                className="aspect-[16/10] w-full md:aspect-[16/8]"
-                imageClassName="object-[center_60%] md:object-center"
-                sizes="100vw"
-              />
-              <figcaption className="caption mt-3">
-                {dictionary.captions.spaceWide}
-              </figcaption>
-            </figure>
+    <section
+      id="space"
+      className="scroll-mt-[var(--header-h)] px-[var(--pad-x)] py-[var(--pad-y)]"
+    >
+      <div className="mx-auto max-w-[1320px]">
+        <div className="max-w-[40rem]">
+          <Reveal y={14} duration={0.55}>
+            <SectionMeta number={dictionary.space.number} label={dictionary.space.label} />
           </Reveal>
+          <RevealText as="h2" className="section-title" delay={0.08} duration={0.78}>
+            {dictionary.space.headline}
+          </RevealText>
+          <Reveal delay={0.18} y={16} duration={0.62}>
+            <p className="mt-6 max-w-[46ch] text-ink/70">{dictionary.space.body}</p>
+            <p className="mt-4 max-w-[46ch] text-ink/70">{dictionary.space.secondary}</p>
+          </Reveal>
+        </div>
 
-          <Reveal
-            delay={0.1}
-            className="mt-6 w-[78%] md:absolute md:-bottom-16 md:end-[var(--pad-x)] md:mt-0 md:w-[32%] lg:-bottom-24"
-            y={28}
-          >
-            <figure className="md:shadow-[0_16px_28px_-22px_var(--okan-line)]">
+        <div className="space-wall">
+          <figure className="space-item space-item--wide">
+            <RevealImage className="space-photo w-full" duration={0.85} y={16} scale={1}>
               <Photo
-                photo={photos.spaceDetail}
-                className="aspect-[3/4] w-full"
-                imageClassName="object-[center_30%]"
-                sizes="(min-width: 768px) 32vw, 78vw"
+                photo={SPACE_PHOTOS.wide}
+                className="h-full w-full photo-soft"
+                imageClassName="object-center"
+                sizes="(max-width: 767px) 100vw, (max-width: 1279px) 58vw, 62vw"
+                quality={85}
               />
-              <figcaption className="caption mt-3 bg-cream/0">
-                {dictionary.captions.spaceDetail}
-              </figcaption>
+            </RevealImage>
+            <figcaption className="space-caption">{dictionary.space.captions.wide}</figcaption>
+          </figure>
+
+          <RevealImage delay={0.12} duration={0.72} y={18} scale={1} className="space-item space-item--nook">
+            <figure>
+              <Photo
+                photo={SPACE_PHOTOS.nook}
+                className="space-photo w-full photo-soft"
+                imageClassName="object-center"
+                sizes="(max-width: 767px) 100vw, (max-width: 1023px) 48vw, 32vw"
+                quality={85}
+              />
+              <figcaption className="space-caption">{dictionary.space.captions.nook}</figcaption>
             </figure>
-          </Reveal>
+          </RevealImage>
+
+          <figure className="space-item space-item--outside">
+            <RevealImage className="space-photo w-full" delay={0.16} duration={0.75} y={16} scale={1}>
+              <Photo
+                photo={SPACE_PHOTOS.outside}
+                className="h-full w-full photo-soft"
+                imageClassName="object-[center_45%]"
+                sizes="(max-width: 767px) 100vw, 50vw"
+                quality={85}
+              />
+            </RevealImage>
+            <figcaption className="space-caption">{dictionary.space.captions.outside}</figcaption>
+          </figure>
+
+          <figure className="space-item space-item--bar">
+            <RevealImage className="space-photo w-full" delay={0.22} duration={0.75} y={16} scale={1}>
+              <Photo
+                photo={SPACE_PHOTOS.bar}
+                className="h-full w-full photo-soft"
+                imageClassName="object-[60%_center]"
+                sizes="(max-width: 767px) 100vw, (max-width: 1023px) 48vw, 50vw"
+                quality={85}
+              />
+            </RevealImage>
+            <figcaption className="space-caption">{dictionary.space.captions.bar}</figcaption>
+          </figure>
         </div>
       </div>
     </section>

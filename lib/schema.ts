@@ -10,9 +10,9 @@ export function cafeJsonLd(dictionary: IDictionary): ICafeJsonLd {
     alternateName: OKAN.name,
     description: dictionary.seo.description,
     url: env.siteUrl,
-    image: `${env.siteUrl}/images/okan-hero.jpg`,
+    image: `${env.siteUrl}/hero/hero-v60.webp`,
     logo: `${env.siteUrl}${OKAN.logoColorSrc}`,
-    servesCuisine: "Coffee",
+    servesCuisine: "Specialty coffee",
     currenciesAccepted: OKAN.currency,
     hasMap: env.googleMapsUrl,
     address: {

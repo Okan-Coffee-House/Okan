@@ -1,34 +1,41 @@
-import type { IMenuData } from "@/types";
+import type { IMenuItem } from "@/types";
 
-export const mockMenu: IMenuData = {
-  categories: [
-    {
-      id: "espresso",
-      name: "Espresso",
-      items: [
-        { name: "Espresso" },
-        { name: "Americano" },
-        { name: "Macchiato" },
-      ],
-    },
-    {
-      id: "filter",
-      name: "Filter",
-      items: [{ name: "V60" }, { name: "Batch Brew" }],
-    },
-    {
-      id: "milk",
-      name: "Milk",
-      items: [
-        { name: "Flat White" },
-        { name: "Latte" },
-        { name: "Cortado" },
-      ],
-    },
-    {
-      id: "tea",
-      name: "Tea",
-      items: [{ name: "Matcha" }, { name: "Tea" }],
-    },
-  ],
-};
+export const menuItems: IMenuItem[] = [
+  {
+    id: "v60",
+    category: "filter",
+    nameEn: "V60",
+    nameAr: "V60",
+    descriptionEn: "Ask the bar what’s currently brewing.",
+    descriptionAr: "اسأل البار عما يُحضَّر الآن.",
+    featured: true,
+    verified: true,
+  },
+  {
+    id: "espresso",
+    category: "espresso",
+    nameEn: "Espresso",
+    nameAr: "إسبرسو",
+    descriptionEn: "Espresso, served short.",
+    descriptionAr: "إسبرسو، يُقدَّم قصيرًا.",
+    verified: true,
+  },
+  {
+    id: "flat-white",
+    category: "milk",
+    nameEn: "Flat White",
+    nameAr: "فلات وايت",
+    descriptionEn: "Espresso with milk, in a smaller cup.",
+    descriptionAr: "إسبرسو مع حليب، في كوب أصغر.",
+    verified: true,
+  },
+  {
+    id: "cortado",
+    category: "milk",
+    nameEn: "Cortado",
+    nameAr: "كورتادو",
+    descriptionEn: "A shorter milk drink.",
+    descriptionAr: "مشروب حليب أقصر.",
+    verified: true,
+  },
+];

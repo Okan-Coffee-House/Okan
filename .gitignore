@@ -40,3 +40,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local working archives
+.favicon-preview/
+.tmp-shots/
+KEEP-AFTER-PROMPT/
+source-images/
+/images from chat got with logo /
+/latest catgpt images /
+CHATGPT-SITE-BRIEF.md
+CHATGPT_ISSUES_REVIEW.md
+CURSOR_DESIGN_PROMPT.md
+OKAN-CONTENT-REPORT.md
+okan-desktop-design-spec.json

@@ -127,7 +127,7 @@ export default function OpenGraphImage() {
             fontWeight: 500,
           }}
         >
-          A quiet start to a different day.
+          Specialty coffee, V60 pour-over and espresso in Salmiya, Kuwait.
         </div>
         <div
           style={{
@@ -137,7 +137,7 @@ export default function OpenGraphImage() {
             letterSpacing: 2,
           }}
         >
-          Coffee House · {OKAN.city}, {OKAN.country}
+          Specialty coffee · {OKAN.city}, {OKAN.country}
         </div>
       </div>
     ),

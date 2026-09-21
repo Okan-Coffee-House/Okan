@@ -19,16 +19,15 @@ export const OKAN = {
   instagramUrl: "https://www.instagram.com/okancoffee",
   tiktokHandle: "@okancoffee_",
   tiktokUrl: "https://www.tiktok.com/@okancoffee_",
-  whatsappUrl: "https://wa.me/96555089218",
   journalUrl:
     "https://hsobzzqfsxdnnwnlcxrl.supabase.co/storage/v1/object/public/link-documents/25b34cf5-e3b0-4efe-b8e5-4a3865fd9c4d/1785271447310_5cuy5j_okan_-_journal.pdf",
   logoColorSrc: "/images/okan-logo-color.svg",
-  logoReverseSrc: "/images/okan-logo-reverse.svg",
-  instagramQrSrc: "/images/okan-instagram-qr.svg",
+  logoMarkSrc: "/images/okan-mark.png",
+  logoMarkReverseSrc: "/images/okan-mark-reverse.png",
   mapsUrl:
     "https://www.google.com/maps/place/?q=place_id:ChIJRaZSBgCdzz8RPW42m0c0gM8",
   mapsEmbedUrl:
-    "https://www.google.com/maps?q=29.3389192,48.0498085&z=16&output=embed",
+    "https://www.google.com/maps?q=OKAN+Coffee+House,+Salmiya,+Kuwait&ll=29.3389192,48.0498085&z=16&output=embed",
   hours: {
     sunday: "7:00 AM – 12:00 AM",
     monday: "7:00 AM – 12:00 AM",
@@ -41,6 +40,6 @@ export const OKAN = {
   openingHoursIso: {
     days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const,
     opens: "07:00",
-    closes: "24:00",
+    closes: "00:00",
   },
 } as const;

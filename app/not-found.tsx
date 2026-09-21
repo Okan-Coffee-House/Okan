@@ -15,7 +15,7 @@ export default function NotFound() {
       <h1 className="display mt-10 max-w-[12ch]">{en.notFound.headline}</h1>
       <p className="mt-6 max-w-[32ch] text-ink/70">{en.notFound.body}</p>
       <Link href="/en" className="btn-ink mt-10 w-fit group">
-        {en.cta.home}
+        {en.notFound.cta}
         <span className="arrow" aria-hidden="true">
           →
         </span>

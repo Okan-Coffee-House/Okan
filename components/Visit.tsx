@@ -1,143 +1,77 @@
 "use client";
 
-import { Reveal } from "@/components/Reveal";
+import { motion, useReducedMotion } from "motion/react";
+import { Reveal, RevealText, easePremium, revealViewport } from "@/components/Reveal";
 import { SectionMeta } from "@/components/SectionMeta";
 import { availableLinks, links } from "@/content/site";
 import { useSite } from "@/components/LocaleProvider";
-import { OKAN } from "@/constants/okan";
-import { isRemoteHref, mailHref, telHref } from "@/lib/utils";
 
 export function Visit() {
   const { dictionary } = useSite();
-  const actions = [
-    {
-      label: dictionary.cta.directions,
-      href: availableLinks.maps ? links.maps : null,
-    },
-    {
-      label: dictionary.cta.call,
-      href: availableLinks.phone ? telHref(links.phone) : null,
-    },
-    {
-      label: dictionary.cta.whatsapp,
-      href: availableLinks.whatsapp ? links.whatsapp : null,
-    },
-    {
-      label: dictionary.cta.email,
-      href: availableLinks.email ? mailHref(links.email) : null,
-    },
-    {
-      label: dictionary.cta.instagram,
-      href: availableLinks.instagram ? links.instagram : null,
-    },
-    {
-      label: dictionary.cta.tiktok,
-      href: availableLinks.tiktok ? links.tiktok : null,
-    },
-    {
-      label: dictionary.cta.journal,
-      href: availableLinks.journal ? links.journal : null,
-    },
-  ];
+  const visit = dictionary.visit;
 
   return (
-    <section id="visit" className="scroll-mt-24 px-[var(--pad-x)] py-[var(--pad-y)]">
-      <div className="mx-auto grid max-w-[1600px] gap-14 lg:grid-cols-12 lg:gap-10">
-        <Reveal className="lg:col-span-5">
-          <SectionMeta number={dictionary.visit.number} label={dictionary.visit.label} />
-          <h2 className="section-title">{dictionary.visit.headline}</h2>
-          <p className="mt-5 max-w-[34ch] text-ink/70">{dictionary.visit.body}</p>
-
-          <div className="mt-10 space-y-8">
-            <div>
-              <p className="kicker">{dictionary.visit.placeLabel}</p>
-              <p className="mt-2 text-[1.15rem] tracking-tight">
-                {dictionary.visit.placeName}
-              </p>
-              <p className="text-ink/70">{dictionary.visit.address}</p>
-            </div>
-            <div>
-              <p className="kicker">{dictionary.visit.hoursLabel}</p>
-              <ul className="mt-2 space-y-1 text-ink/70">
-                {dictionary.visit.hours.map((row) => (
-                  <li key={row.days}>
-                    <span className="text-ink">{row.days}</span>
-                    <span className="mx-2 text-olive">—</span>
-                    {row.time}
-                  </li>
-                ))}
-              </ul>
-            </div>
+    <section
+      id="visit"
+      className="scroll-mt-[var(--header-h)] px-[var(--pad-x)] py-[var(--pad-y)]"
+    >
+      <div className="mx-auto max-w-[1320px]">
+        <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12 lg:items-stretch">
+          <div className="lg:col-span-4">
+            <Reveal y={14} duration={0.55}>
+              <SectionMeta number={visit.number} label={visit.label} />
+            </Reveal>
+            <RevealText as="h2" className="section-title" delay={0.08} duration={0.75}>
+              {visit.headline}
+            </RevealText>
+            <Reveal delay={0.16} y={16} duration={0.6}>
+              <p className="mt-5 max-w-[36ch] text-ink/70">{visit.body}</p>
+            </Reveal>
           </div>
 
-          <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-4">
-            {actions.map((action) => (
-              <li key={action.label}>
-                {action.href ? (
-                  <a
-                    href={action.href}
-                    className="link-underline text-[0.75rem] tracking-[0.16em] uppercase"
-                    target={isRemoteHref(action.href) ? "_blank" : undefined}
-                    rel={isRemoteHref(action.href) ? "noopener noreferrer" : undefined}
-                  >
-                    {action.label}
-                  </a>
-                ) : (
-                  <span className="text-[0.75rem] tracking-[0.16em] uppercase text-olive/80">
-                    {action.label}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-
-          {availableLinks.instagram ? (
-            <a
-              href={links.instagram}
-              className="mt-12 inline-block"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={OKAN.instagramQrSrc}
-                alt={dictionary.a11y.instagramQr}
-                className="h-28 w-28"
-              />
-              <p className="caption mt-3">{dictionary.visit.scan}</p>
-            </a>
-          ) : null}
-        </Reveal>
-
-        <Reveal delay={0.08} className="lg:col-span-7">
-          <MapPanel />
-        </Reveal>
+          <div className="flex lg:col-span-7 lg:col-start-6">
+            <MapPanel />
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
 function MapPanel() {
-  const { dictionary } = useSite();
+  const { locale, dictionary } = useSite();
+  const reduce = useReducedMotion();
 
-  if (availableLinks.mapsEmbed) {
+  if (!availableLinks.mapsEmbed) {
     return (
-      <iframe
-        title={dictionary.a11y.map}
-        src={links.mapsEmbed}
-        className="h-[26rem] w-full border-0 bg-warm lg:h-full lg:min-h-[32rem]"
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
+      <Reveal delay={0.12} duration={0.7} className="w-full">
+        <div className="map-panel flex items-end p-6">
+          <div>
+            <p className="kicker">{dictionary.visit.locationLabel}</p>
+            <p className="mt-2 text-[1.15rem]">{dictionary.visit.locality}</p>
+          </div>
+        </div>
+      </Reveal>
     );
   }
 
+  const separator = links.mapsEmbed.includes("?") ? "&" : "?";
+
   return (
-    <div className="relative min-h-[26rem] overflow-hidden bg-warm lg:min-h-[32rem]">
-      <div className="absolute bottom-6 start-6">
-        <p className="kicker">{dictionary.visit.locationLabel}</p>
-        <p className="mt-2 text-[1.15rem] tracking-tight">{dictionary.visit.locality}</p>
-      </div>
-    </div>
+    <motion.div
+      className="map-panel w-full"
+      initial={reduce ? false : { opacity: 0, clipPath: "inset(0 0 10% 0)" }}
+      whileInView={reduce ? undefined : { opacity: 1, clipPath: "inset(0 0 0 0)" }}
+      viewport={revealViewport}
+      transition={{ duration: reduce ? 0.16 : 0.85, delay: reduce ? 0 : 0.12, ease: easePremium }}
+    >
+      <iframe
+        title={dictionary.a11y.map}
+        src={`${links.mapsEmbed}${separator}hl=${locale}`}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        allowFullScreen
+      />
+    </motion.div>
   );
 }

@@ -17,7 +17,7 @@ export default async function NotFound() {
       </h1>
       <p className="mt-6 max-w-[32ch] text-ink/70">{dictionary.notFound.body}</p>
       <Link href={withLocale(locale)} className="btn-ink mt-10 w-fit group">
-        {dictionary.cta.home}
+        {dictionary.notFound.cta}
         <span className="arrow" aria-hidden="true">
           →
         </span>

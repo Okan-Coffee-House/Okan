@@ -26,7 +26,7 @@ export function LanguageSwitch({ className }: ILanguageSwitchProps) {
             hrefLang={item}
             lang={item}
             className={cn(
-              "lang-link text-[0.72rem] tracking-[0.18em] uppercase",
+              "lang-link",
               item === locale ? "text-okan-ink" : "text-okan-olive hover:text-okan-ink",
             )}
             aria-current={item === locale ? "true" : undefined}

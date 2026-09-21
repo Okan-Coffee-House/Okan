@@ -1,29 +1,27 @@
+import Image from "next/image";
 import { OKAN } from "@/constants/okan";
 import { cn } from "@/lib/utils";
 import type { ILogoProps } from "@/types";
 
-export function Logo({ className, markClassName, variant = "color" }: ILogoProps) {
+export function Logo({ className, markClassName, variant = "color", priority }: ILogoProps) {
   const isReverse = variant === "reverse";
 
   return (
     <span
-      className={cn(
-        "inline-flex items-center gap-2.5",
-        isReverse ? "text-okan-cream" : "text-okan-ink",
-        className,
-      )}
+      className={cn("logo-lockup", isReverse ? "text-okan-cream" : "text-okan-ink", className)}
     >
-      {/* Brand SVG is already vector; next/image does not optimize it. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={isReverse ? OKAN.logoReverseSrc : OKAN.logoColorSrc}
+      <Image
+        src={isReverse ? OKAN.logoMarkReverseSrc : OKAN.logoMarkSrc}
         alt=""
-        className={cn("h-10 w-auto", markClassName)}
-        aria-hidden="true"
+        width={367}
+        height={1102}
+        priority={priority}
+        className={cn("logo-mark", markClassName)}
+        sizes="28px"
+        unoptimized
+        style={{ width: "auto" }}
       />
-      <span className="text-[0.82rem] font-semibold tracking-[0.28em]">
-        {OKAN.shortName}
-      </span>
+      <span className="wordmark">{OKAN.shortName}</span>
     </span>
   );
 }

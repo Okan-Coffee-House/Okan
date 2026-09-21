@@ -1,120 +1,122 @@
 import type { IPhotoAsset } from "@/types";
 
-/**
- * Swap files in /public/images using these exact names.
- * Photo components fall back gracefully if a file is missing.
- */
+function asset(photo: IPhotoAsset): IPhotoAsset {
+  return photo;
+}
+
 export const photos = {
-  hero: {
-    src: "/images/okan-hero.jpg",
-    alt: "Morning light across a quiet coffee bar of wood and marble.",
-    caption: "Morning light",
+  hero: asset({
+    src: "/hero/hero-v60.webp",
+    alt: "V60 pour-over brewing at the bar at OKAN Coffee House, Salmiya",
+    fallback: "coffee",
+    width: 3200,
+    height: 2000,
+  }),
+  coffeeV60: asset({
+    src: "/images/coffee-v60.webp",
+    alt: "V60 pour-over brewing into a glass server",
+    fallback: "coffee",
+    width: 1122,
+    height: 1402,
+  }),
+  coffeeEspresso: asset({
+    src: "/images/coffee-espresso.webp",
+    alt: "Espresso extracting at the OKAN bar",
+    fallback: "coffee",
+    width: 1122,
+    height: 1402,
+  }),
+  coffeeBar: asset({
+    src: "/images/coffee-v60-bar.webp",
+    alt: "V60 being prepared at the OKAN bar",
+    fallback: "coffee",
+    width: 1672,
+    height: 941,
+  }),
+  coffeeMilk: asset({
+    src: "/images/flat-white.webp",
+    alt: "A flat white with latte art in an OKAN cup",
     fallback: "morning",
-  },
-  story: {
-    src: "/images/story-01.jpg",
-    alt: "A sunlit seating corner with a wood table and two chairs.",
-    caption: "The room, unhurried",
-    fallback: "morning",
-  },
-  spaceWide: {
-    src: "/images/space-01.jpg",
-    alt: "A wide view of the cafe interior with long wooden tables and natural light.",
-    caption: "Open space, quiet architecture",
+    width: 1122,
+    height: 1402,
+  }),
+  spaceWide: asset({
+    src: "/images/warm-scandinavian-cafe-interior.webp",
+    alt: "Warm wood, natural light and seating inside OKAN Coffee House",
     fallback: "wood",
-  },
-  spaceDetail: {
-    src: "/images/space-02.jpg",
-    alt: "Close detail of marble, oak, and a ceramic cup in morning light.",
-    caption: "Marble, oak, ceramic",
-    fallback: "stone",
-  },
-  beans: {
-    src: "/images/coffee-beans.jpg",
-    alt: "Roasted coffee beans in a ceramic bowl on wood.",
-    caption: "Origin and character",
-    fallback: "coffee",
-  },
-  extraction: {
-    src: "/images/extraction.jpg",
-    alt: "Pour-over coffee extraction on a marble bar.",
-    caption: "Precision, without hurry",
-    fallback: "coffee",
-  },
-  serving: {
-    src: "/images/serving.jpg",
-    alt: "A ceramic cup of coffee set down on a wooden table.",
-    caption: "Attention in the small details",
-    fallback: "coffee",
-  },
-  experience: {
-    src: "/images/experience.jpg",
-    alt: "Two coffee cups on a sunlit table, chairs drawn for conversation.",
-    caption: "The moment around the cup",
+    width: 1122,
+    height: 1402,
+  }),
+  spaceNook: asset({
+    src: "/images/sunlit-minimalist-cafe-nook.webp",
+    alt: "Sunlit seating corner inside OKAN",
     fallback: "morning",
-  },
-  sunflower: {
-    src: "/images/sunflower.jpg",
-    alt: "A single sunflower turning toward warm light.",
-    caption: "Always toward the light",
+    width: 1122,
+    height: 1402,
+  }),
+  spaceOutdoor: asset({
+    src: "/images/sunlit-okan-coffee-house-patio.webp",
+    alt: "Outdoor seating at OKAN Coffee House",
+    fallback: "wood",
+    width: 1536,
+    height: 1024,
+  }),
+  spaceBar: asset({
+    src: "/images/sunlit-minimalist-coffee-bar.webp",
+    alt: "The coffee bar at OKAN",
+    fallback: "wood",
+    width: 1122,
+    height: 1402,
+  }),
+  sunflower: asset({
+    src: "/images/sunlit-sunflower-coffee-nook.webp",
+    alt: "A sunflower in a ceramic vase with coffee on a sunlit table",
     fallback: "sunflower",
-  },
-  marble: {
-    src: "/images/material-marble.jpg",
-    alt: "Close view of pale stone with soft veining.",
-    fallback: "stone",
-  },
-  wood: {
-    src: "/images/material-wood.jpg",
-    alt: "Close view of warm oak grain.",
-    fallback: "wood",
-  },
-  tile: {
-    src: "/images/material-tile.jpg",
-    alt: "Close view of dark matte tile.",
-    fallback: "earth",
-  },
-  earth: {
-    src: "/images/material-earth.jpg",
-    alt: "Close view of earthy brick and clay.",
-    fallback: "earth",
-  },
+    width: 1586,
+    height: 992,
+  }),
   moments: [
-    {
-      src: "/images/moment-01.jpg",
-      alt: "Hands holding a ceramic coffee cup on a wooden table.",
-      caption: "Held, not hurried",
-      fallback: "coffee",
-    },
-    {
-      src: "/images/moment-02.jpg",
-      alt: "A cafe table in morning light with a cup and open book.",
-      caption: "A slower table",
-      fallback: "morning",
-    },
-    {
-      src: "/images/moment-03.jpg",
-      alt: "Sunlight across cream plaster and warm brick.",
-      caption: "Wall, light, earth",
-      fallback: "earth",
-    },
-    {
-      src: "/images/moment-04.jpg",
-      alt: "Close view of dark coffee in a ceramic cup.",
-      caption: "The cup, close",
-      fallback: "coffee",
-    },
-    {
-      src: "/images/moment-05.jpg",
-      alt: "A small sunflower in a ceramic vessel on a cafe table.",
-      caption: "A little light",
-      fallback: "sunflower",
-    },
-    {
-      src: "/images/moment-06.jpg",
-      alt: "Empty wooden chairs in a wash of morning sunlight.",
-      caption: "Room for lingering",
+    asset({
+      src: "/images/sunlit-okan-coffee-house-terrace.webp",
+      alt: "OKAN Coffee House exterior in warm morning light",
       fallback: "wood",
-    },
+      width: 1122,
+      height: 1402,
+    }),
+    asset({
+      src: "/images/sunlit-cafe-coffee-by-the-window.webp",
+      alt: "Coffee by the window at OKAN",
+      fallback: "morning",
+      width: 1122,
+      height: 1402,
+    }),
+    asset({
+      src: "/images/okan-coffee-house-takeaway-moment.webp",
+      alt: "OKAN takeaway coffee outside the coffee house",
+      fallback: "coffee",
+      width: 1032,
+      height: 1122,
+    }),
+    asset({
+      src: "/images/sunlit-okan-cafe-streetfront.webp",
+      alt: "Streetfront of OKAN Coffee House",
+      fallback: "wood",
+      width: 853,
+      height: 1402,
+    }),
+    asset({
+      src: "/images/sunlit-cafe-door-with-patterned-scarf.webp",
+      alt: "Wooden entrance detail at OKAN",
+      fallback: "stone",
+      width: 1122,
+      height: 1402,
+    }),
+    asset({
+      src: "/images/sunlit-cafe-front-with-planter-and-bench.webp",
+      alt: "Plants and seating outside OKAN",
+      fallback: "earth",
+      width: 1122,
+      height: 1402,
+    }),
   ],
 } as const satisfies Record<string, IPhotoAsset | readonly IPhotoAsset[]>;
